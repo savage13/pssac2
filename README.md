@@ -1,7 +1,7 @@
 pssac2
 ======
 
-Plot Seismograms using GMT
+Plot Seismograms using GMT5
 
 
 Building / Installing
