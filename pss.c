@@ -13,6 +13,8 @@
 #include "gmt_support.h"
 #include "array.h"
 
+#define PSSAC "pssac2"
+
 typedef struct GMT_OPTION GMTOption;
 typedef struct polygon polygon;
 struct polygon {
@@ -22,7 +24,6 @@ struct polygon {
 };
 
 polygon ** polyfillrect(double *x, double *y, int n, int positive, double rect[4]);
-
 
 
 
@@ -44,7 +45,7 @@ int
 error(char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  fprintf(stderr, "pssac2: ");
+  fprintf(stderr, "%s: ", PSSAC);
   vfprintf(stderr, fmt, ap);
   va_end(ap);
   exit(-1);
@@ -65,9 +66,83 @@ info(int level, char *fmt, ...) {
     return;
   }
   va_start(ap, fmt);
-  fprintf(stderr, "pssac2: ");
+  fprintf(stderr, "%s: ", PSSAC);
   vfprintf(stderr, fmt, ap);
   va_end(ap);
+}
+
+void
+usage() {
+  fprintf(stderr,"%s: Plot seismograms (GMT5)\n", PSSAC);
+  fprintf(stderr,"Usage: %s <infiles> -C<cut0/cut1> -J<params> -R<w/e/s/n>\n", PSSAC);
+  fprintf(stderr,"      [-B<tickinfo>] [-E(k|d|a|n|b)(t(0-9,b,o,a)|vel)] [-K] [-V]\n");
+  fprintf(stderr,"      [-Msize/alpha] [-Gr/g/b/c/t1/t2] [-O] [-P] [-Sshift] \n");
+  fprintf(stderr,"      [-W<pen>] [-r]\n");
+  fprintf(stderr,"\n");
+  fprintf(stderr,"      sacfiles may be given on either the command line or\n");
+  fprintf(stderr,"      if none are given they will be expected using standard in (stdin)\n");
+  fprintf(stderr,"      Using stdin indicate (sacfile)\n");//,x,y,pen)\n");
+  fprintf(stderr,"          if x and y are given, it will override the position\n");
+  fprintf(stderr,"               taken from the sacfile\n");
+  fprintf(stderr,"          if pen is given the pen on the command line will be overridden\n");
+  fprintf(stderr,"\n");
+  fprintf(stderr,"      All options are in the same meaning as standard GMT EXCEPT:\n");
+  fprintf(stderr,"      -C <cut_begin/cut_end>\n");
+  fprintf(stderr,"              windowing data\n");
+  fprintf(stderr,"              -Ct[0-9]/t[0-9] will use the t[0-9] header values\n");
+  fprintf(stderr,"              or -Ct[0-9]/te or -Ctb/t[0-9]\n");
+  fprintf(stderr,"      -E option determines\n");
+  fprintf(stderr,"        (1) profile type:\n");
+  fprintf(stderr,"            a: azimuth profile\n");
+  fprintf(stderr,"            b: back-azimuth profile\n");
+  fprintf(stderr,"            d: distance profile with x in degrees\n");
+  fprintf(stderr,"            k: distance profile with x in kilometers\n");
+  fprintf(stderr,"            n: traces are numbered from 1 to N in y-axis\n");
+  fprintf(stderr,"        (2) time alignment:\n");
+  fprintf(stderr,"            tn: align up with time mark tn in SAC head\n");
+  fprintf(stderr,"             n= b, o, a, 0-9\n");
+  fprintf(stderr,"            vel: use reduced velocity\n");
+  fprintf(stderr,"              Examples: -Ek8.0 -Eat-2 -Ed4.4 -Ent-3\n");
+  fprintf(stderr,"      -M vertical scaling in sacfile_unit/MEASURE_UNIT = size<required> \n");
+  fprintf(stderr,"          size: each trace will normalized to size (in MEASURE_UNIT)\n");
+  fprintf(stderr,"              scale =  (1/size) * [data(max) - data(min)]\n");
+  fprintf(stderr,"          size/alpha: plot absolute amplitude multiplied by (1/size)*r^alpha\n");
+  fprintf(stderr,"              where r is the distance range in km across surface\n");
+  fprintf(stderr,"              specifying alpha = 0.0 will give absolute amplitudes\n");
+  fprintf(stderr,"              scale = (1/size) * r^alpha\n");
+  fprintf(stderr,"          size/s: plot absolute amplitude times (1/size)*sqrt(sin(gcarc))\n");
+  fprintf(stderr,"              where gcarc is the distance in degrees.\n");
+  fprintf(stderr,"              scale = (1/size) * sqrt(sin(gcarc))\n");
+  fprintf(stderr,"      -Gr/g/b/zero_line/t0/t1 positive phase painting\n");
+  fprintf(stderr,"              paints the positive portion of the trace in color r/g/b\n");
+  fprintf(stderr,"              from the zero_line to the top and between times t0 and t1\n");
+  fprintf(stderr,"      -gr/g/b/zero_line/t0/t1 negative phase painting\n");
+  fprintf(stderr,"              paints the negative portion of the trace in color r/g/b\n");
+  fprintf(stderr,"              from the zero_line to the bottom and between times t0 and t1\n");
+//  fprintf(stderr,"      -N turn clipping off, data will be plotted outside the bounds\n");
+//  fprintf(stderr,"              clipping is on by default in X/Y plots and maps\n");
+  fprintf(stderr,"      -S <seconds> shift the trace by seconds\n");
+//  fprintf(stderr,"              u: if next character after S is a u\n");
+//  fprintf(stderr,"                 then shift using the user variable\n");
+//  fprintf(stderr,"                 i.e. -Su9 will use 'user9' for shifting\n");
+//  fprintf(stderr,"                 positive shifts move the plot backwards in time\n");
+  fprintf(stderr,"      -L <seconds per MEASURE_UNIT> while poltting on maps <required for maps>\n");
+  fprintf(stderr,"              If your seismograms look choppy and pixelated\n");
+  fprintf(stderr,"              Check the value of DOTS_PR_INCH in gmtdefaults\n");
+  fprintf(stderr,"              and increase the value using gmtset\n");
+          //  fprintf(stderr,"      -l <x/y/length/bar_length/font_size>\n");
+          //  fprintf(stderr,"              plot a timescale in seconds per MEASURE_UNIT at (x,y)\n");
+          //  fprintf(stderr,"              Only works while plotting on maps\n");
+//  fprintf(stderr,"      -D <dx/dy> shifts position of seismogram in MEASURE_UNIT\n");
+//  fprintf(stderr,"              Only works while plotting on maps\n");
+  fprintf(stderr,"      -W <pen> the pen may be specified on the command line\n");
+  fprintf(stderr,"              or it may be specified with individual files using stdin\n");
+//  fprintf(stderr,"      -n Distances and Great Circle Arcs may be negative, don't complain\n");
+  fprintf(stderr,"      -r remove the mean value\n");
+//  fprintf(stderr,"      -s byte swap the data before plotting\n");  
+//  fprintf(stderr,"      -v plot the traces vertically\n");
+  fprintf(stderr,"      -V Verbose (use more for more information)\n");
+  exit(-1);
 }
 
 struct Value {
@@ -367,10 +442,10 @@ pssac2_plot_scale(void *API, GMTOption *options) {
     x[1] = WESN[XMIN];    y[1] = WESN[YMAX];
     x[2] = WESN[XMAX];    y[2] = WESN[YMAX];
     x[3] = WESN[XMAX];    y[3] = WESN[YMIN];
-    R = opt;
   } else {
     error("Error, must specify -R option\n");
   }
+  R = opt;
   if((J = GMT_Find_Option(API, 'J', options)) == NULL) {
     error("Error, must specify -J option\n");
   }
@@ -436,6 +511,7 @@ time_value(SACHEAD *h, char t) {
   case '8': time = h->t8 ; break;
   case '9': time = h->t9 ; break;
   default:
+    time = 0;
     error("Unknown time value, '%c' exiting\n", t);
     break;
   }
@@ -607,11 +683,14 @@ main(int argc, char *argv[]) {
   float align;
   pssac2_ctrl *Ctrl;
 
+  if(argc <= 1) {
+    usage();
+  }
   
   Ctrl = (pssac2_ctrl *) malloc(sizeof(pssac2_ctrl));
 
   info(DEBUG, "GMT Create Session\n");
-  API = GMT_Create_Session("pssac2", 2, 0, NULL);
+  API = GMT_Create_Session(PSSAC, 2, 0, NULL);
   if(!API) {
     error("Error creating GMT Session\n");
     exit(-1);
@@ -654,6 +733,7 @@ main(int argc, char *argv[]) {
   y0 = 0.0;
   option = options;
   use_stdin = 0;
+  byte_swap = 0;
   if(!GMT_Find_Option(API, '<', option)) {
     use_stdin = 1;
     option = NULL;
