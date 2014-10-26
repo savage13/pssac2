@@ -7,7 +7,7 @@ Plot Seismograms using GMT5
 Building / Installing
 ---------------------
 
-```./configure --with-gmt=/usr/path/to/gmt```
+```./configure ```
 
 - OSX Build Issues
   GMT5 by default creates libraries with relative paths, this causes trouble
@@ -23,4 +23,6 @@ Building / Installing
     % make
     % make install
 ```
+
+If the GMT 5 libraries are not already in your path, you may need to add them to your LD_LIBRARY_PATH enviornment variable or to the system's ldconfig directories.
 
