@@ -1,5 +1,5 @@
 
-#include <gmt/gmt.h>
+#include <gmt.h>
 #include "array.h"
 
 struct GMT_DATASEGMENT *

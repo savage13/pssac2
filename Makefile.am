@@ -1,7 +1,9 @@
 
 AUTOMAKE_OPTIONS = no-dependencies
 
-AM_CFLAGS = -Wall -Wextra
+AM_CFLAGS = -Wall -Wextra `${GMTCONFIG} --cflags`
+
+AM_LDFLAGS = `${GMTCONFIG} --libs`
 
 bin_PROGRAMS = pssac2
 

@@ -6,7 +6,7 @@
 #include <math.h>
 #include <stdarg.h>
 
-#include <gmt/gmt.h>
+#include <gmt.h>
 
 #include "sac.h"
 

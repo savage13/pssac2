@@ -28,11 +28,10 @@ AC_ARG_WITH(netcdf, [AS_HELP_STRING([--with-netcdf=path],
 AC_PROG_CC
 AC_SEARCH_LIBS(sin, m)
 #AC_SEARCH_LIBS(nc_create, netcdf, [], [AC_MSG_ERROR([NetCDF library not found])])
-AC_SEARCH_LIBS(GMT_Create_Session, gmt,    [], [AC_MSG_ERROR([GMT library not found])])
-#AC_SEARCH_LIBS(ps_line,   psl,    [  ], [
-#    AC_SEARCH_LIBS(PSL_plotline,   psl,    [ ], [AC_MSG_ERROR([PSL library not found])])
-#])
-#AC_SEARCH_LIBS(GMT_putfill,  gmt,  [], [AC_MSG_ERROR([gmtps library not found])])
+
+AC_CHECK_PROG([GMTCONFIG], [gmt-config], [gmt-config])
+test -z "$GMTCONFIG" && AC_MSG_ERROR([Missing GMT5 nstallation.])
+
 AM_PROG_CC_C_O
 
 AC_CONFIG_HEADERS([config.h])
