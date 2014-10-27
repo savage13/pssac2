@@ -3774,8 +3774,6 @@ fi
 
 test -z "$GMTCONFIG" && as_fn_error $? "Missing GMT5 nstallation." "$LINENO" 5
 
-# AC_SUBST(GMTCONFIG,[$GMTCONFIG])
-
 
 
 ac_config_headers="$ac_config_headers config.h"
