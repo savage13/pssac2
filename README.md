@@ -3,6 +3,7 @@ pssac2
 
 Plot Seismograms using GMT5
 
+Note: Build from 11/04/2014 require an updated version of GMT5 libs (r13657 or later)
 
 Building / Installing
 ---------------------
