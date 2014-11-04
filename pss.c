@@ -426,6 +426,7 @@ double *
 pssac2_plot_scale(void *API, GMTOption *options) {
   double x[4],y[4];
   double *WESN;
+  int i;
   int in_ID, out_ID;
   int status;
   char i_string[16], o_string[16];
@@ -433,6 +434,7 @@ pssac2_plot_scale(void *API, GMTOption *options) {
   struct GMT_VECTOR *V;
   struct GMT_VECTOR *Vo;
   GMTOption *opt, *R, *J;
+  uint64_t dim[2] = {2,4};
 
   WESN = (double *) malloc(sizeof(double) * 8);
 
@@ -452,7 +454,14 @@ pssac2_plot_scale(void *API, GMTOption *options) {
 
   /* Determine plot_scale / cm */
   V   = C_to_GMT_vector(x, y, 4);
-  Vo  = GMT_vector(2, 4, GMT_DOUBLE, 0);
+  Vo = GMT_Create_Data(API, GMT_IS_VECTOR, GMT_IS_POINT, GMT_VIA_OUTPUT, dim, NULL, NULL, 0, 0, NULL);
+
+  Vo->type = (enum GMT_enum_type *) malloc(sizeof(enum GMT_enum_type) * Vo->n_columns);
+  Vo->data = (union GMT_UNIVECTOR *) malloc(sizeof(union GMT_UNIVECTOR) * Vo->n_columns);  
+  for(i = 0; i < (int)Vo->n_columns; i++) {
+    Vo->type[i] = GMT_DOUBLE;
+    Vo->data[i].f8 = malloc(sizeof(double) * Vo->n_rows);
+  }
 
   in_ID = GMT_Register_IO(API, GMT_IS_DATASET, 
                           GMT_IS_REFERENCE + GMT_VIA_VECTOR, 
@@ -475,12 +484,7 @@ pssac2_plot_scale(void *API, GMTOption *options) {
 
   status = GMT_Call_Module(API, "mapproject", GMT_MODULE_CMD, buffer);
   if(status) {
-    error("Error calling mapproject in plot_scale\n");
-  }
-
-  Vo = GMT_Retrieve_Data(API, out_ID);
-  if(Vo == NULL) {
-    error("Error getting data from mapproject in plot_scale\n");
+    error("Error calling mapproject in plot_scale %d \n", status);
   }
 
   WESN[4 + XMIN] = Vo->data[GMT_X].f8[0];
@@ -785,7 +789,7 @@ main(int argc, char *argv[]) {
     /* Allocate space for data */
     gmt_datasegment_alloc(seg, 2, n);
 
-    for(i = 0; i < h.npts; i++) {
+    for(i = 0; i < h.npts && k < n; i++) {
       t = h.b + i * h.delta - align + shift;
       if(Ctrl->C.active && ( t < time[0] || t > time[1])) {
         info(DEBUG, "%d/%d %f skip %f %f\n", k, (int)seg->n_rows, t, time[0], time[1]);

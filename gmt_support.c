@@ -4,11 +4,16 @@
 
 struct GMT_DATASEGMENT *
 gmt_datasegment(  ) {
+  int i;
   struct GMT_DATASEGMENT *seg = (struct GMT_DATASEGMENT *) malloc(sizeof(struct GMT_DATASEGMENT));
   seg->n_columns = 2;
   seg->n_rows = 0;
   seg->min = (double *) malloc(sizeof(double) * seg->n_columns);
   seg->max = (double *) malloc(sizeof(double) * seg->n_columns);
+  for(i = 0; i < (int)seg->n_columns; i++) {
+    seg->min[i] =  1e37;
+    seg->max[i] = -1e37;
+  }
   seg->coord = NULL;
   seg->label = NULL;
   seg->header = NULL;
@@ -65,6 +70,7 @@ gmt_dataset_append_datasegment(struct GMT_DATASET *data, struct GMT_DATASEGMENT 
 
 struct GMT_DATATABLE *
 gmt_datatable() {
+  int i;
   struct GMT_DATATABLE *table;
   table = (struct GMT_DATATABLE *) malloc(sizeof(struct GMT_DATATABLE ));
   table->n_headers = 0;
@@ -73,6 +79,10 @@ gmt_datatable() {
   table->n_records = 0;
   table->min = (double *) malloc(sizeof(double) * table->n_columns);
   table->max = (double *) malloc(sizeof(double) * table->n_columns);
+  for(i = 0; i < (int)table->n_columns; i++) {
+    table->min[i] =  1e37;
+    table->max[i] = -1e37;
+  }
   table->header = NULL;
   table->n_alloc = 0;
   table->segment = NULL;
@@ -97,6 +107,7 @@ gmt_dataset_append_datatable(struct GMT_DATASET *data, struct GMT_DATATABLE *tab
 
 struct GMT_DATASET *
 gmt_dataset() {
+  int i;
   struct GMT_DATASET* data;
   data = (struct GMT_DATASET*) malloc(sizeof(struct GMT_DATASET));
   data->n_tables   = 0;
@@ -105,9 +116,14 @@ gmt_dataset() {
   data->n_records  = 0;
   data->min = (double *) malloc(sizeof(double) * data->n_columns);
   data->max = (double *) malloc(sizeof(double) * data->n_columns);
+  for(i = 0; i < (int)data->n_columns; i++) {
+    data->min[i] =  1e37;
+    data->max[i] = -1e37;
+  }
   data->table = NULL;
   data->n_alloc = 0;
   data->alloc_mode = 0;
+  data->alloc_level = -42;
   return data;
 }
 
@@ -116,6 +132,7 @@ GMT_vector(int ncols, int nrows, enum GMT_enum_type type, int filled) {
   struct GMT_VECTOR *V;
   int i;
   V = (struct GMT_VECTOR *) malloc(sizeof(struct GMT_VECTOR));
+  V->alloc_mode = 0;
   V->n_columns = ncols;
   V->type = (enum GMT_enum_type *) malloc(sizeof(enum GMT_enum_type) * ncols);
   for(i = 0; i < ncols; i++) {
