@@ -11,23 +11,16 @@ AS_IF( [ test x"${CFLAGS}" = x ], [ CFLAGS="" ] )
 
 AC_CONFIG_SRCDIR([./pss.c])
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign])
 
 AC_ARG_WITH(gmt, [AS_HELP_STRING([--with-gmt=path],[Specify path to GMT])], 
                  [
                    [ LDFLAGS+=" -L${withval}/lib "] 
                    [ CFLAGS+=" -I${withval}/include  " ]
                  ], [])
-AC_ARG_WITH(netcdf, [AS_HELP_STRING([--with-netcdf=path],
-                    [Specify path to NetCDF])], 
-                    [ 
-                      [ LDFLAGS+=" -L${withval}/lib " ]
-                      [ CFLAGS+=" -I${withval}/include " ] 
-                    ], [])
 
 AC_PROG_CC
 AC_SEARCH_LIBS(sin, m)
-#AC_SEARCH_LIBS(nc_create, netcdf, [], [AC_MSG_ERROR([NetCDF library not found])])
 
 AC_CHECK_PROG([GMTCONFIG], [gmt-config], [gmt-config])
 test -z "$GMTCONFIG" && AC_MSG_ERROR([Missing GMT5 nstallation.])

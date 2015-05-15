@@ -1,0 +1,15 @@
+
+# Configure stuff
+autom4te.cache
+config.h
+config.log
+config.status
+stamp-h1
+
+# Build stuff
+Makefile
+t/Makefile
+*.o
+
+# Executables
+pssac2
