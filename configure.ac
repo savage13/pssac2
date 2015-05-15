@@ -11,7 +11,7 @@ AS_IF( [ test x"${CFLAGS}" = x ], [ CFLAGS="" ] )
 
 AC_CONFIG_SRCDIR([./pss.c])
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign])
 
 AC_ARG_WITH(gmt, [AS_HELP_STRING([--with-gmt=path],[Specify path to GMT])], 
                  [
